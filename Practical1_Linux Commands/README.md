@@ -150,6 +150,12 @@ mkdir --help
 
 ---
 
+## Reflection
+
+This practical introduced me to the Linux command line interface and its core commands. I learned how to navigate the filesystem using `pwd`, `ls`, and `cd`, and how to manage files and directories with `mkdir`, `touch`, `cp`, `mv`, `rm`, and `rmdir`. One challenge I faced was using `rmdir` on a non-empty directory — it failed because `rmdir` only removes empty directories. I solved this by first deleting the file inside with `rm` before running `rmdir`. I also learned how file permissions work in Linux and how `chmod +x` makes a script executable, which I could clearly see in the permission string changing from `-rw-r--r--` to `-rwxr-xr-x`. Overall, this practical gave me a solid foundation in Linux CLI operations that will be essential for DevOps workflows.
+
+---
+
 ## References
 
 - Linux Command Line Guide — DSO101 Class Material (`Linux_Commands.pdf`)
