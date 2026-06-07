@@ -1,4 +1,4 @@
-# Practical 8: GitHub Actions and Render - Self Study
+# Practical 7: Dockerfile
 
 **Name:** UgayNobu  
 **Student ID:** 02240369  
@@ -8,110 +8,75 @@
 
 ## Objective
 
-The objective of this self-study practical was to understand how GitHub Actions can be used for CI/CD and how Render can be used to deploy an application automatically.
+The objective of this practical was to learn how to write a basic Dockerfile for a Python Flask application and understand what each instruction does.
 
 ---
 
-## Step 1: Create the GitHub Actions Workflow
+## Task 1: Write and Understand the Dockerfile
 
-A workflow file was created inside `.github/workflows/` in the repository. The workflow is triggered automatically on every push to the `main` branch.
+### Step 1: View the Dockerfile
+
+The Dockerfile was created inside the `myapp` project folder. Each instruction defines a layer in the final Docker image.
 
 ```bash
-mkdir -p .github/workflows
+cat dockerfile
 ```
 
-```yaml
-name: Deploy to Render
+![Dockerfile contents](images/Screenshot_2026-06-08_at_1_06_13_AM.png)
 
-on:
-  push:
-    branches:
-      - main
+### Step 2: Build the Docker Image
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Run Build Step
-        run: echo "Build step completed successfully"
-```
-
-The workflow file was committed and pushed to GitHub:
+The image was built using the `docker build` command. Docker reads the Dockerfile top to bottom and executes each instruction as a layer. Cached layers were reused since the files had not changed.
 
 ```bash
-git add .
-git commit -m "Add GitHub Actions workflow"
-git push
+docker build -t flaskapp .
 ```
 
-![GitHub Actions workflow pushed to repository](images/Screenshot_2026-06-08_at_1_17_54_AM.png)
+![Docker build output showing all layers](images/Screenshot_2026-06-08_at_1_08_01_AM.png)
 
----
+### Step 3: Verify the Image Was Created
 
-## Step 2: Verify GitHub Actions Workflow Ran Successfully
+After the build, the image was confirmed to exist locally using:
 
-After pushing, GitHub Actions automatically triggered the workflow. The Actions tab showed the workflow completed with **Status: Success** in 10 seconds.
-
-![GitHub Actions workflow completed successfully](images/Screenshot_2026-06-08_at_1_18_36_AM.png)
-
----
-
-## Step 3: Connect Project to Render
-
-The GitHub repository was connected to Render. Render was configured to automatically redeploy the service whenever a new commit is pushed to the `main` branch via Auto-Deploy.
-
-Common Render settings used:
-
-```text
-Service Type: Web Service
-Branch: main
-Runtime: Docker / Image
-Auto-Deploy: Enabled
+```bash
+docker images | grep flaskapp
 ```
 
-The Render service events page shows a full history of automatic deployments triggered by GitHub commits.
-
-![Render service showing automatic deployment history](images/Screenshot_2026-06-08_at_1_23_10_AM.png)
+![flaskapp image listed in docker images](images/Screenshot_2026-06-08_at_1_08_15_AM.png)
 
 ---
 
-## Step 4: Verify Deployment on Render Dashboard
+## Dockerfile Explanation
 
-The Render dashboard shows all active services with their deployment status. All services show **Deployed** confirming successful automatic deployments connected to GitHub.
-
-![Render dashboard showing all active deployed services](images/Screenshot_2026-06-08_at_1_24_48_AM.png)
+| Instruction | Purpose |
+|---|---|
+| `FROM python:3.10-slim` | Uses a lightweight Python base image |
+| `WORKDIR /app` | Sets the working directory inside the container |
+| `COPY . .` | Copies all project files into the container |
+| `RUN pip install flask` | Installs Flask during the image build |
+| `EXPOSE 8080` | Documents that the app listens on port 8080 |
+| `CMD ["python", "app.py"]` | Starts the Flask app when the container runs |
 
 ---
 
 ## Results
 
-| Step | Description | Status |
+| Task | Description | Status |
 |------|-------------|--------|
-| Step 1 | Created `.github/workflows/deploy.yml` and pushed to GitHub | ✅ |
-| Step 2 | GitHub Actions workflow ran and completed successfully | ✅ |
-| Step 3 | Connected GitHub repository to Render with Auto-Deploy | ✅ |
-| Step 4 | Render dashboard shows all services actively deployed | ✅ |
+| Task 1 | Created and reviewed the Dockerfile | ✅ |
+| Task 1 | Built Docker image `flaskapp` from Dockerfile | ✅ |
+| Task 1 | Verified image exists with `docker images` | ✅ |
 
 ---
 
 ## Reflection
 
-This self-study practical helped me understand how CI/CD pipelines work in practice. GitHub Actions automates build and test steps whenever code is pushed to the repository, while Render listens for those changes and automatically redeploys the latest version of the application. This eliminates the need for manual deployment and reduces the chance of human error. I also learned that the workflow file in `.github/workflows/` is the key configuration that defines what happens on each push — from checking out the code to running build commands. Together, GitHub Actions and Render create a seamless and automated software delivery pipeline.
-
----
-
-## Overall Conclusion
-
-Through these DSO101 practicals, I learned the foundations of Linux, Docker, Jenkins, data persistence, Dockerfiles, Docker Hub, GitHub Actions, and Render deployment. These tools are important in DevOps and CI/CD because they help developers build, test, package, and deploy applications in a consistent and automated way. The practicals also helped me understand how containers work, how applications can be deployed using cloud platforms, and how automation improves the software development workflow.
+This practical helped me understand the structure and purpose of a Dockerfile. Each instruction in a Dockerfile represents a step in building the image — starting from a base image, setting up the environment, copying files, installing dependencies, and defining how the container starts. I also observed that Docker uses layer caching, so unchanged steps are reused in subsequent builds, making rebuilds much faster. Writing a Dockerfile makes application deployment consistent and reproducible across any environment.
 
 ---
 
 ## References
 
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Render Documentation](https://render.com/docs)
-- [GitHub Actions Workflow Syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
+- [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
+- [Docker Build Documentation](https://docs.docker.com/engine/reference/commandline/build/)
+- [Flask Documentation](https://flask.palletsprojects.com/)
